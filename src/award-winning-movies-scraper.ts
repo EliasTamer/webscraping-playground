@@ -44,16 +44,21 @@ class OscarWinningFilmsScraper {
       await page.waitForSelector("loading", { hidden: true });
       await page.waitForSelector("table", { visible: true });
 
-      await page.evaluate(() => {
-        const tableRows = document.querySelectorAll("table tr");
-        movies = Array.from(tableRows).map((column) => {
+      const yearMovies = await page.evaluate(() => {
+        const tableRows = document.querySelectorAll("table tbody tr");
+        return Array.from(tableRows).map((column) => {
           const cells = column.querySelectorAll("td");
 
-          return Array.from(cells).map((cell) => cell.textContent || "");
+          return Array.from(cells).map(
+            (cell) => cell.textContent?.trim() || ""
+          );
         });
       });
-      console.log(movies);
+
+      movies.push(...yearMovies);
     }
+    browser.close();
+    return movies;
   };
 }
 
